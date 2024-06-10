@@ -1,0 +1,7 @@
+services:
+  simply-simplify-language:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - 8181:80
