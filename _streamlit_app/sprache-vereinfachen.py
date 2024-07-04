@@ -63,6 +63,13 @@ CLAUDE_TEMPLATES = [
     CLAUDE_TEMPLATE_ANALYSIS_LS,
 ]
 
+CLAUDE_TEMPLATES_EDITED = [
+    CLAUDE_TEMPLATE_ES,
+    CLAUDE_TEMPLATE_LS,
+    CLAUDE_TEMPLATE_ANALYSIS_ES,
+    CLAUDE_TEMPLATE_ANALYSIS_LS,
+]
+
 OPENAI_TEMPLATES = [
     OPENAI_TEMPLATE_ES,
     OPENAI_TEMPLATE_LS,
@@ -70,6 +77,12 @@ OPENAI_TEMPLATES = [
     OPENAI_TEMPLATE_ANALYSIS_LS,
 ]
 
+OPENAI_TEMPLATES_EDITED = [
+    OPENAI_TEMPLATE_ES,
+    OPENAI_TEMPLATE_LS,
+    OPENAI_TEMPLATE_ANALYSIS_ES,
+    OPENAI_TEMPLATE_ANALYSIS_LS,
+]
 
 # ---------------------------------------------------------------
 # Constants
@@ -343,7 +356,7 @@ def invoke_anthropic_model(
     analysis=False,
 ):
     """Invoke Anthropic model."""
-    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES_EDITED, analysis)
     try:
         message = anthropic_client.messages.create(
             model=modelId,
@@ -376,7 +389,7 @@ def invoke_openai_model(
     analysis=False,
 ):
     """Invoke OpenAI model."""
-    final_prompt, system = create_prompt(text, *OPENAI_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *OPENAI_TEMPLATES_EDITED, analysis)
     try:
         message = openai_client.chat.completions.create(
             model=modelId,
@@ -404,7 +417,7 @@ def invoke_mistral_model(
 ):
     """Invoke Mistral model."""
     # Our Claude templates seem to work fine for Mistral as well.
-    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES_EDITED, analysis)
     messages = [
         ChatMessage(role="system", content=system),
         ChatMessage(role="user", content=final_prompt),
@@ -724,6 +737,107 @@ with cols[1]:
     placeholder_result = st.empty()
 with cols[2]:
     placeholder_analysis = st.empty()
+
+# edit prompts
+
+expert_cols = st.columns([1, 1])
+
+INDEX_TEMPLATE_ES = 0
+INDEX_TEMPLATE_LS = 1
+INDEX_TEMPLATE_ANALYSIS_ES = 2
+INDEX_TEMPLATE_ANALYSIS_LS = 3
+
+with cols[0]:
+    expert_prompt_mode = st.toggle(
+        "Expert Mode",
+        value=False,
+        help="**Schalter aktiviert**: «Expert Mode». **Schalter nicht aktiviert**: «Simple Mode».",
+    )
+
+with cols[1]:
+    prompt_caption = st.caption("Der Expert-Mode erlaubt es, Prompts anzupassen. OpenAI Prompts werden benutzt für GPT Modelle. Claude Prompts werden benutzt für Claude und Mistral Modelle", unsafe_allow_html=True)
+
+prompt_cols = st.columns([2,2])
+
+with cols[0]:
+    if expert_prompt_mode:
+        for i in range(len(OPENAI_TEMPLATES_EDITED)):
+            if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                prompt = st.container()
+
+                with prompt:
+                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                        f"OpenAI Prompt (vereinfachen)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=OPENAI_TEMPLATES[i]
+                    )
+            elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                prompt = st.container()
+
+                with prompt:
+                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                        f"OpenAI Prompt (vereinfachen)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=OPENAI_TEMPLATES[i]
+                    )
+            elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                prompt = st.container()
+
+                with prompt:
+                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                        f"OpenAI Prompt (analyse)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=OPENAI_TEMPLATES[i]
+                    )
+            elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                prompt = st.container()
+
+                with prompt:
+                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                        f"OpenAI Prompt (analyse)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=OPENAI_TEMPLATES[i]
+                    )
+
+with cols[1]:
+    if expert_prompt_mode:
+        for i in range(len(CLAUDE_TEMPLATES_EDITED)):
+            if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                prompt = st.container()
+
+                with prompt:
+                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                        f"Claude Prompt (vereinfachen)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=CLAUDE_TEMPLATES[i]
+                    )
+            elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                prompt = st.container()
+
+                with prompt:
+                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                        f"Claude Prompt (vereinfachen)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=CLAUDE_TEMPLATES[i]
+                    )
+            elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                prompt = st.container()
+
+                with prompt:
+                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                        f"Claude Prompt (analyse)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=CLAUDE_TEMPLATES[i]
+                    )
+            elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                prompt = st.container()
+
+                with prompt:
+                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                        f"Claude Prompt (analyse)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=CLAUDE_TEMPLATES[i]
+                    )
 
 # Populate containers.
 with source_text:
