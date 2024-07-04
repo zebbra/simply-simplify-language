@@ -19,7 +19,7 @@ FROM python:3.12.3
 
 WORKDIR /app
 ENV STREAMLIT_SERVER_PORT=8000
-EXPOSE 80
+EXPOSE 8000
 
 COPY --from=builder /usr/local/bin/streamlit /usr/local/bin/streamlit
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
