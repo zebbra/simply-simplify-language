@@ -84,6 +84,9 @@ OPENAI_TEMPLATES_EDITED = [
     OPENAI_TEMPLATE_ANALYSIS_LS,
 ]
 
+RULES_ES_EDITED = RULES_ES
+RULES_LS_EDITED = RULES_LS
+
 # ---------------------------------------------------------------
 # Constants
 
@@ -305,25 +308,25 @@ def create_prompt(text, prompt_es, prompt_ls, analysis_es, analysis_ls, analysis
     """Create prompt and system message according the app settings."""
     if analysis:
         if leichte_sprache:
-            final_prompt = analysis_ls.format(rules=RULES_LS, prompt=text)
+            final_prompt = analysis_ls.format(rules=RULES_LS_EDITED, prompt=text)
             system = SYSTEM_MESSAGE_LS
         else:
-            final_prompt = analysis_es.format(rules=RULES_ES, prompt=text)
+            final_prompt = analysis_es.format(rules=RULES_ES_EDITED, prompt=text)
             system = SYSTEM_MESSAGE_ES
     else:
         if leichte_sprache:
             if condense_text:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS, completeness=REWRITE_CONDENSED, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_CONDENSED, prompt=text
                 )
             else:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS, completeness=REWRITE_COMPLETE, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_COMPLETE, prompt=text
                 )
             system = SYSTEM_MESSAGE_LS
         else:
             final_prompt = prompt_es.format(
-                rules=RULES_ES, completeness=REWRITE_COMPLETE, prompt=text
+                rules=RULES_ES_EDITED, completeness=REWRITE_COMPLETE, prompt=text
             )
             system = SYSTEM_MESSAGE_ES
     return final_prompt, system
@@ -838,6 +841,25 @@ with cols[1]:
                         height=TEXT_AREA_HEIGHT,
                         value=CLAUDE_TEMPLATES[i]
                     )
+                    
+if expert_prompt_mode:
+    if leichte_sprache:
+        with cols[0]:
+            prompt = st.container()
+            RULES_LS_EDITED = st.text_area(
+                        f"Rules (leichte sprache, all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=RULES_LS
+                    )
+    else:
+        with cols[0]:
+            prompt = st.container()
+            RULES_ES_EDITED = st.text_area(
+                f"Rules (einfache sprache, all models)",
+                height=TEXT_AREA_HEIGHT,
+                value=RULES_ES
+            )
+        
 
 # Populate containers.
 with source_text:
