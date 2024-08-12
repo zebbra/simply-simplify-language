@@ -87,6 +87,12 @@ OPENAI_TEMPLATES_EDITED = [
 RULES_ES_EDITED = RULES_ES
 RULES_LS_EDITED = RULES_LS
 
+REWRITE_CONDENSED_EDITED = REWRITE_CONDENSED
+REWRITE_COMPLETE_EDITED = REWRITE_COMPLETE
+
+SYSTEM_MESSAGE_LS_EDITED = SYSTEM_MESSAGE_LS
+SYSTEM_MESSAGE_ES_EDITED = SYSTEM_MESSAGE_ES
+
 # ---------------------------------------------------------------
 # Constants
 
@@ -309,26 +315,26 @@ def create_prompt(text, prompt_es, prompt_ls, analysis_es, analysis_ls, analysis
     if analysis:
         if leichte_sprache:
             final_prompt = analysis_ls.format(rules=RULES_LS_EDITED, prompt=text)
-            system = SYSTEM_MESSAGE_LS
+            system = SYSTEM_MESSAGE_LS_EDITED
         else:
             final_prompt = analysis_es.format(rules=RULES_ES_EDITED, prompt=text)
-            system = SYSTEM_MESSAGE_ES
+            system = SYSTEM_MESSAGE_ES_EDITED
     else:
         if leichte_sprache:
             if condense_text:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS_EDITED, completeness=REWRITE_CONDENSED, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_CONDENSED_EDITED, prompt=text
                 )
             else:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS_EDITED, completeness=REWRITE_COMPLETE, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_COMPLETE_EDITED, prompt=text
                 )
-            system = SYSTEM_MESSAGE_LS
+            system = SYSTEM_MESSAGE_LS_EDITED
         else:
             final_prompt = prompt_es.format(
-                rules=RULES_ES_EDITED, completeness=REWRITE_COMPLETE, prompt=text
+                rules=RULES_ES_EDITED, completeness=REWRITE_COMPLETE_EDITED, prompt=text
             )
-            system = SYSTEM_MESSAGE_ES
+            system = SYSTEM_MESSAGE_ES_EDITED
     return final_prompt, system
 
 
@@ -859,7 +865,43 @@ if expert_prompt_mode:
                 height=TEXT_AREA_HEIGHT,
                 value=RULES_ES
             )
-        
+
+if expert_prompt_mode:
+    if leichte_sprache and condense_text:
+        with cols[0]:
+            prompt = st.container()
+            REWRITE_CONDENSED_EDITED = st.text_area(
+                f"Condense text instruction (all models)",
+                height=TEXT_AREA_HEIGHT,
+                value=REWRITE_CONDENSED
+            )
+    else:
+        with cols[0]:
+            prompt = st.container()
+            REWRITE_COMPLETE_EDITED = st.text_area(
+                f"Complete text instruction (all models)",
+                height=TEXT_AREA_HEIGHT,
+                value=REWRITE_COMPLETE
+            )
+
+
+if expert_prompt_mode:
+    if leichte_sprache:
+        with cols[1]:
+            prompt = st.container()
+            SYSTEM_MESSAGE_LS_EDITED = st.text_area(
+                        f"System text (leichte sprache, all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=SYSTEM_MESSAGE_LS
+                    )
+    else:
+        with cols[1]:
+            prompt = st.container()
+            SYSTEM_MESSAGE_ES_EDITED = st.text_area(
+                f"System text (einfache sprache, all models)",
+                height=TEXT_AREA_HEIGHT,
+                value=SYSTEM_MESSAGE_ES
+            )
 
 # Populate containers.
 with source_text:
