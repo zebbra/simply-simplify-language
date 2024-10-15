@@ -1,5 +1,6 @@
 # ---------------------------------------------------------------
 # Imports
+from typing import Optional
 
 import streamlit as st
 
@@ -63,6 +64,13 @@ CLAUDE_TEMPLATES = [
     CLAUDE_TEMPLATE_ANALYSIS_LS,
 ]
 
+CLAUDE_TEMPLATES_EDITED = [
+    CLAUDE_TEMPLATE_ES,
+    CLAUDE_TEMPLATE_LS,
+    CLAUDE_TEMPLATE_ANALYSIS_ES,
+    CLAUDE_TEMPLATE_ANALYSIS_LS,
+]
+
 OPENAI_TEMPLATES = [
     OPENAI_TEMPLATE_ES,
     OPENAI_TEMPLATE_LS,
@@ -70,6 +78,21 @@ OPENAI_TEMPLATES = [
     OPENAI_TEMPLATE_ANALYSIS_LS,
 ]
 
+OPENAI_TEMPLATES_EDITED = [
+    OPENAI_TEMPLATE_ES,
+    OPENAI_TEMPLATE_LS,
+    OPENAI_TEMPLATE_ANALYSIS_ES,
+    OPENAI_TEMPLATE_ANALYSIS_LS,
+]
+
+RULES_ES_EDITED = RULES_ES
+RULES_LS_EDITED = RULES_LS
+
+REWRITE_CONDENSED_EDITED = REWRITE_CONDENSED
+REWRITE_COMPLETE_EDITED = REWRITE_COMPLETE
+
+SYSTEM_MESSAGE_LS_EDITED = SYSTEM_MESSAGE_LS
+SYSTEM_MESSAGE_ES_EDITED = SYSTEM_MESSAGE_ES
 
 # ---------------------------------------------------------------
 # Constants
@@ -292,27 +315,27 @@ def create_prompt(text, prompt_es, prompt_ls, analysis_es, analysis_ls, analysis
     """Create prompt and system message according the app settings."""
     if analysis:
         if leichte_sprache:
-            final_prompt = analysis_ls.format(rules=RULES_LS, prompt=text)
-            system = SYSTEM_MESSAGE_LS
+            final_prompt = analysis_ls.format(rules=RULES_LS_EDITED, prompt=text)
+            system = SYSTEM_MESSAGE_LS_EDITED
         else:
-            final_prompt = analysis_es.format(rules=RULES_ES, prompt=text)
-            system = SYSTEM_MESSAGE_ES
+            final_prompt = analysis_es.format(rules=RULES_ES_EDITED, prompt=text)
+            system = SYSTEM_MESSAGE_ES_EDITED
     else:
         if leichte_sprache:
             if condense_text:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS, completeness=REWRITE_CONDENSED, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_CONDENSED_EDITED, prompt=text
                 )
             else:
                 final_prompt = prompt_ls.format(
-                    rules=RULES_LS, completeness=REWRITE_COMPLETE, prompt=text
+                    rules=RULES_LS_EDITED, completeness=REWRITE_COMPLETE_EDITED, prompt=text
                 )
-            system = SYSTEM_MESSAGE_LS
+            system = SYSTEM_MESSAGE_LS_EDITED
         else:
             final_prompt = prompt_es.format(
-                rules=RULES_ES, completeness=REWRITE_COMPLETE, prompt=text
+                rules=RULES_ES_EDITED, completeness=REWRITE_COMPLETE_EDITED, prompt=text
             )
-            system = SYSTEM_MESSAGE_ES
+            system = SYSTEM_MESSAGE_ES_EDITED
     return final_prompt, system
 
 
@@ -343,7 +366,7 @@ def invoke_anthropic_model(
     analysis=False,
 ):
     """Invoke Anthropic model."""
-    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES_EDITED, analysis)
     try:
         message = anthropic_client.messages.create(
             model=modelId,
@@ -376,7 +399,7 @@ def invoke_openai_model(
     analysis=False,
 ):
     """Invoke OpenAI model."""
-    final_prompt, system = create_prompt(text, *OPENAI_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *OPENAI_TEMPLATES_EDITED, analysis)
     try:
         message = openai_client.chat.completions.create(
             model=modelId,
@@ -404,7 +427,7 @@ def invoke_mistral_model(
 ):
     """Invoke Mistral model."""
     # Our Claude templates seem to work fine for Mistral as well.
-    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES, analysis)
+    final_prompt, system = create_prompt(text, *CLAUDE_TEMPLATES_EDITED, analysis)
     messages = [
         ChatMessage(role="system", content=system),
         ChatMessage(role="user", content=final_prompt),
@@ -645,6 +668,19 @@ def log_event(
     logging.warning(log_string)
 
 
+def get_raw_query_param(key: str) -> Optional[str]:
+    query_params = st.query_params
+    if key in query_params:
+        return query_params[key][0]
+    else:
+        return None
+
+def get_bool_query_param(key:str) -> bool:
+    p = get_raw_query_param(key)
+    if p is None:
+        return False
+    return p.lower() == 'true' or p == '1'
+
 # ---------------------------------------------------------------
 # Main
 
@@ -655,6 +691,8 @@ mistral_client = get_mistral_client()
 nlp = get_nlp_pipeline()
 project_info = get_project_info()
 
+EXPERT_MODE = get_bool_query_param("EXPERT")
+GPT_4O_ONLY = not EXPERT_MODE
 
 st.markdown("## 🙋‍♀️ Sprache einfach vereinfachen")
 create_project_info(project_info)
@@ -682,11 +720,14 @@ with button_cols[1]:
         use_container_width=True,
         help="Vereinfacht deinen Ausgangstext.",
     )
-    do_one_click = st.button(
-        "🚀 One-Klick",
-        use_container_width=True,
-        help="Schickt deinen Ausgangstext gleichzeitig an alle Modelle.",
-    )
+    if EXPERT_MODE:
+        do_one_click = st.button(
+            "🚀 One-Klick",
+            use_container_width=True,
+            help="Schickt deinen Ausgangstext gleichzeitig an alle Modelle.",
+        )
+    else:
+        do_one_click = False
 with button_cols[2]:
     leichte_sprache = st.toggle(
         "Leichte Sprache",
@@ -700,20 +741,31 @@ with button_cols[2]:
             help="**Schalter aktiviert**: Modell konzentriert sich auf essentielle Informationen und versucht, Unwichtiges wegzulassen. **Schalter nicht aktiviert**: Modell versucht, alle Informationen zu übernehmen.",
         )
 with button_cols[3]:
-    model_choice = st.radio(
-        label="Sprachmodell",
-        options=(
-            "Mistral Large",
-            "Claude 3 Haiku",
-            "Claude 3 Sonnet",
-            "Claude 3 Opus",
-            "GPT-4",
-            "GPT-4o",
-        ),
-        index=5,
-        horizontal=True,
-        help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
-    )
+    if GPT_4O_ONLY:
+        # model_choice = st.radio(
+        #     label="Sprachmodell",
+        #     options=(
+        #         "GPT-4o",
+        #     ),
+        #     horizontal=True,
+        #     help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
+        # )
+        model_choice = "GPT-4o"
+    else:
+        model_choice = st.radio(
+            label="Sprachmodell",
+            options=(
+                "Mistral Large",
+                "Claude 3 Haiku",
+                "Claude 3 Sonnet",
+                "Claude 3 Opus",
+                "GPT-4",
+                "GPT-4o",
+            ),
+            index=5,
+            horizontal=True,
+            help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
+        )
 
 # Instantiate empty containers for the text areas.
 cols = st.columns([2, 2, 1])
@@ -724,6 +776,165 @@ with cols[1]:
     placeholder_result = st.empty()
 with cols[2]:
     placeholder_analysis = st.empty()
+
+# edit prompts
+
+expert_cols = st.columns([1, 1])
+
+INDEX_TEMPLATE_ES = 0
+INDEX_TEMPLATE_LS = 1
+INDEX_TEMPLATE_ANALYSIS_ES = 2
+INDEX_TEMPLATE_ANALYSIS_LS = 3
+
+with cols[0]:
+    if EXPERT_MODE:
+        expert_prompt_mode = st.toggle(
+            "Expert Mode",
+            value=False,
+            help="**Schalter aktiviert**: «Expert Mode». **Schalter nicht aktiviert**: «Simple Mode».",
+        )
+
+        with cols[1]:
+            prompt_caption = st.caption("Der Expert-Mode erlaubt es, Prompts anzupassen. OpenAI Prompts werden benutzt für GPT Modelle. Claude Prompts werden benutzt für Claude und Mistral Modelle", unsafe_allow_html=True)
+
+        prompt_cols = st.columns([2,2])
+
+        with cols[0]:
+            if expert_prompt_mode:
+                for i in range(len(OPENAI_TEMPLATES_EDITED)):
+                    if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+
+        with cols[1]:
+            if expert_prompt_mode:
+                for i in range(len(CLAUDE_TEMPLATES_EDITED)):
+                    if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+
+        if expert_prompt_mode:
+            if leichte_sprache:
+                with cols[0]:
+                    prompt = st.container()
+                    RULES_LS_EDITED = st.text_area(
+                                f"Rules (leichte sprache, all models)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=RULES_LS
+                            )
+            else:
+                with cols[0]:
+                    prompt = st.container()
+                    RULES_ES_EDITED = st.text_area(
+                        f"Rules (einfache sprache, all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=RULES_ES
+                    )
+
+        if expert_prompt_mode:
+            if leichte_sprache and condense_text:
+                with cols[0]:
+                    prompt = st.container()
+                    REWRITE_CONDENSED_EDITED = st.text_area(
+                        f"Condense text instruction (all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=REWRITE_CONDENSED
+                    )
+            else:
+                with cols[0]:
+                    prompt = st.container()
+                    REWRITE_COMPLETE_EDITED = st.text_area(
+                        f"Complete text instruction (all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=REWRITE_COMPLETE
+                    )
+
+
+        if expert_prompt_mode:
+            if leichte_sprache:
+                with cols[1]:
+                    prompt = st.container()
+                    SYSTEM_MESSAGE_LS_EDITED = st.text_area(
+                                f"System text (leichte sprache, all models)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=SYSTEM_MESSAGE_LS
+                            )
+            else:
+                with cols[1]:
+                    prompt = st.container()
+                    SYSTEM_MESSAGE_ES_EDITED = st.text_area(
+                        f"System text (einfache sprache, all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=SYSTEM_MESSAGE_ES
+                    )
+    else:
+        expert_prompt_mode = False
 
 # Populate containers.
 with source_text:
