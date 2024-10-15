@@ -720,11 +720,14 @@ with button_cols[1]:
         use_container_width=True,
         help="Vereinfacht deinen Ausgangstext.",
     )
-    do_one_click = st.button(
-        "🚀 One-Klick",
-        use_container_width=True,
-        help="Schickt deinen Ausgangstext gleichzeitig an alle Modelle.",
-    )
+    if EXPERT_MODE:
+        do_one_click = st.button(
+            "🚀 One-Klick",
+            use_container_width=True,
+            help="Schickt deinen Ausgangstext gleichzeitig an alle Modelle.",
+        )
+    else:
+        do_one_click = False
 with button_cols[2]:
     leichte_sprache = st.toggle(
         "Leichte Sprache",
