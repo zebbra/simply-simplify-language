@@ -741,20 +741,31 @@ with button_cols[2]:
             help="**Schalter aktiviert**: Modell konzentriert sich auf essentielle Informationen und versucht, Unwichtiges wegzulassen. **Schalter nicht aktiviert**: Modell versucht, alle Informationen zu übernehmen.",
         )
 with button_cols[3]:
-    model_choice = st.radio(
-        label="Sprachmodell",
-        options=(
-            "Mistral Large",
-            "Claude 3 Haiku",
-            "Claude 3 Sonnet",
-            "Claude 3 Opus",
-            "GPT-4",
-            "GPT-4o",
-        ),
-        index=5,
-        horizontal=True,
-        help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
-    )
+    if GPT_4O_ONLY:
+        # model_choice = st.radio(
+        #     label="Sprachmodell",
+        #     options=(
+        #         "GPT-4o",
+        #     ),
+        #     horizontal=True,
+        #     help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
+        # )
+        model_choice = "GPT-4o"
+    else:
+        model_choice = st.radio(
+            label="Sprachmodell",
+            options=(
+                "Mistral Large",
+                "Claude 3 Haiku",
+                "Claude 3 Sonnet",
+                "Claude 3 Opus",
+                "GPT-4",
+                "GPT-4o",
+            ),
+            index=5,
+            horizontal=True,
+            help="Alle Modelle liefern je nach Ausgangstext meist gute bis sehr gute Ergebnisse und sind alle einen Versuch wert. Claude Haiku und GPT-4o sind am schnellsten. Mehr Details siehe Infobox oben auf der Seite.",
+        )
 
 # Instantiate empty containers for the text areas.
 cols = st.columns([2, 2, 1])
