@@ -787,151 +787,154 @@ INDEX_TEMPLATE_ANALYSIS_ES = 2
 INDEX_TEMPLATE_ANALYSIS_LS = 3
 
 with cols[0]:
-    expert_prompt_mode = st.toggle(
-        "Expert Mode",
-        value=False,
-        help="**Schalter aktiviert**: «Expert Mode». **Schalter nicht aktiviert**: «Simple Mode».",
-    )
+    if EXPERT_MODE:
+        expert_prompt_mode = st.toggle(
+            "Expert Mode",
+            value=False,
+            help="**Schalter aktiviert**: «Expert Mode». **Schalter nicht aktiviert**: «Simple Mode».",
+        )
 
-with cols[1]:
-    prompt_caption = st.caption("Der Expert-Mode erlaubt es, Prompts anzupassen. OpenAI Prompts werden benutzt für GPT Modelle. Claude Prompts werden benutzt für Claude und Mistral Modelle", unsafe_allow_html=True)
-
-prompt_cols = st.columns([2,2])
-
-with cols[0]:
-    if expert_prompt_mode:
-        for i in range(len(OPENAI_TEMPLATES_EDITED)):
-            if leichte_sprache and i == INDEX_TEMPLATE_LS:
-                prompt = st.container()
-
-                with prompt:
-                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
-                        f"OpenAI Prompt (vereinfachen)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=OPENAI_TEMPLATES[i]
-                    )
-            elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
-                prompt = st.container()
-
-                with prompt:
-                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
-                        f"OpenAI Prompt (vereinfachen)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=OPENAI_TEMPLATES[i]
-                    )
-            elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
-                prompt = st.container()
-
-                with prompt:
-                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
-                        f"OpenAI Prompt (analyse)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=OPENAI_TEMPLATES[i]
-                    )
-            elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
-                prompt = st.container()
-
-                with prompt:
-                    OPENAI_TEMPLATES_EDITED[i] = st.text_area(
-                        f"OpenAI Prompt (analyse)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=OPENAI_TEMPLATES[i]
-                    )
-
-with cols[1]:
-    if expert_prompt_mode:
-        for i in range(len(CLAUDE_TEMPLATES_EDITED)):
-            if leichte_sprache and i == INDEX_TEMPLATE_LS:
-                prompt = st.container()
-
-                with prompt:
-                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
-                        f"Claude Prompt (vereinfachen)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=CLAUDE_TEMPLATES[i]
-                    )
-            elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
-                prompt = st.container()
-
-                with prompt:
-                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
-                        f"Claude Prompt (vereinfachen)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=CLAUDE_TEMPLATES[i]
-                    )
-            elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
-                prompt = st.container()
-
-                with prompt:
-                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
-                        f"Claude Prompt (analyse)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=CLAUDE_TEMPLATES[i]
-                    )
-            elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
-                prompt = st.container()
-
-                with prompt:
-                    CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
-                        f"Claude Prompt (analyse)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=CLAUDE_TEMPLATES[i]
-                    )
-                    
-if expert_prompt_mode:
-    if leichte_sprache:
-        with cols[0]:
-            prompt = st.container()
-            RULES_LS_EDITED = st.text_area(
-                        f"Rules (leichte sprache, all models)",
-                        height=TEXT_AREA_HEIGHT,
-                        value=RULES_LS
-                    )
-    else:
-        with cols[0]:
-            prompt = st.container()
-            RULES_ES_EDITED = st.text_area(
-                f"Rules (einfache sprache, all models)",
-                height=TEXT_AREA_HEIGHT,
-                value=RULES_ES
-            )
-
-if expert_prompt_mode:
-    if leichte_sprache and condense_text:
-        with cols[0]:
-            prompt = st.container()
-            REWRITE_CONDENSED_EDITED = st.text_area(
-                f"Condense text instruction (all models)",
-                height=TEXT_AREA_HEIGHT,
-                value=REWRITE_CONDENSED
-            )
-    else:
-        with cols[0]:
-            prompt = st.container()
-            REWRITE_COMPLETE_EDITED = st.text_area(
-                f"Complete text instruction (all models)",
-                height=TEXT_AREA_HEIGHT,
-                value=REWRITE_COMPLETE
-            )
-
-
-if expert_prompt_mode:
-    if leichte_sprache:
         with cols[1]:
-            prompt = st.container()
-            SYSTEM_MESSAGE_LS_EDITED = st.text_area(
-                        f"System text (leichte sprache, all models)",
+            prompt_caption = st.caption("Der Expert-Mode erlaubt es, Prompts anzupassen. OpenAI Prompts werden benutzt für GPT Modelle. Claude Prompts werden benutzt für Claude und Mistral Modelle", unsafe_allow_html=True)
+
+        prompt_cols = st.columns([2,2])
+
+        with cols[0]:
+            if expert_prompt_mode:
+                for i in range(len(OPENAI_TEMPLATES_EDITED)):
+                    if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            OPENAI_TEMPLATES_EDITED[i] = st.text_area(
+                                f"OpenAI Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=OPENAI_TEMPLATES[i]
+                            )
+
+        with cols[1]:
+            if expert_prompt_mode:
+                for i in range(len(CLAUDE_TEMPLATES_EDITED)):
+                    if leichte_sprache and i == INDEX_TEMPLATE_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (vereinfachen)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_LS:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+                    elif not leichte_sprache and i == INDEX_TEMPLATE_ANALYSIS_ES:
+                        prompt = st.container()
+
+                        with prompt:
+                            CLAUDE_TEMPLATES_EDITED[i] = st.text_area(
+                                f"Claude Prompt (analyse)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=CLAUDE_TEMPLATES[i]
+                            )
+
+        if expert_prompt_mode:
+            if leichte_sprache:
+                with cols[0]:
+                    prompt = st.container()
+                    RULES_LS_EDITED = st.text_area(
+                                f"Rules (leichte sprache, all models)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=RULES_LS
+                            )
+            else:
+                with cols[0]:
+                    prompt = st.container()
+                    RULES_ES_EDITED = st.text_area(
+                        f"Rules (einfache sprache, all models)",
                         height=TEXT_AREA_HEIGHT,
-                        value=SYSTEM_MESSAGE_LS
+                        value=RULES_ES
+                    )
+
+        if expert_prompt_mode:
+            if leichte_sprache and condense_text:
+                with cols[0]:
+                    prompt = st.container()
+                    REWRITE_CONDENSED_EDITED = st.text_area(
+                        f"Condense text instruction (all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=REWRITE_CONDENSED
+                    )
+            else:
+                with cols[0]:
+                    prompt = st.container()
+                    REWRITE_COMPLETE_EDITED = st.text_area(
+                        f"Complete text instruction (all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=REWRITE_COMPLETE
+                    )
+
+
+        if expert_prompt_mode:
+            if leichte_sprache:
+                with cols[1]:
+                    prompt = st.container()
+                    SYSTEM_MESSAGE_LS_EDITED = st.text_area(
+                                f"System text (leichte sprache, all models)",
+                                height=TEXT_AREA_HEIGHT,
+                                value=SYSTEM_MESSAGE_LS
+                            )
+            else:
+                with cols[1]:
+                    prompt = st.container()
+                    SYSTEM_MESSAGE_ES_EDITED = st.text_area(
+                        f"System text (einfache sprache, all models)",
+                        height=TEXT_AREA_HEIGHT,
+                        value=SYSTEM_MESSAGE_ES
                     )
     else:
-        with cols[1]:
-            prompt = st.container()
-            SYSTEM_MESSAGE_ES_EDITED = st.text_area(
-                f"System text (einfache sprache, all models)",
-                height=TEXT_AREA_HEIGHT,
-                value=SYSTEM_MESSAGE_ES
-            )
+        expert_prompt_mode = False
 
 # Populate containers.
 with source_text:
