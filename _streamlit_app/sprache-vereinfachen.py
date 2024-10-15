@@ -1,5 +1,6 @@
 # ---------------------------------------------------------------
 # Imports
+from typing import Optional
 
 import streamlit as st
 
@@ -667,6 +668,19 @@ def log_event(
     logging.warning(log_string)
 
 
+def get_raw_query_param(key: str) -> Optional[str]:
+    query_params = st.query_params
+    if key in query_params:
+        return query_params[key][0]
+    else:
+        return None
+
+def get_bool_query_param(key:str) -> bool:
+    p = get_raw_query_param(key)
+    if p is None:
+        return False
+    return p.lower() == 'true' or p == '1'
+
 # ---------------------------------------------------------------
 # Main
 
@@ -677,6 +691,8 @@ mistral_client = get_mistral_client()
 nlp = get_nlp_pipeline()
 project_info = get_project_info()
 
+EXPERT_MODE = get_bool_query_param("EXPERT")
+GPT_4O_ONLY = not EXPERT_MODE
 
 st.markdown("## 🙋‍♀️ Sprache einfach vereinfachen")
 create_project_info(project_info)
