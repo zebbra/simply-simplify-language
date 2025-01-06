@@ -15,7 +15,7 @@ RUN python -m spacy download de_core_news_sm
 COPY . . 
 
 
-FROM python:3.12.3
+FROM python:3.12
 
 WORKDIR /app
 ENV STREAMLIT_SERVER_PORT=8000
