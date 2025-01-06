@@ -11,13 +11,13 @@
 # We use the Claude prompt structure for Mistral with good success. Feel free to adjust the structure to your needs.
 
 
-SYSTEM_MESSAGE_ES = """Du bist ein hilfreicher Assistent, der Texte in Einfache Sprache, Sprachniveau B1 bis A2, umschreibt. Sei immer wahrheitsgemäß und objektiv. Schreibe nur das, was du sicher aus dem Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. Gib dein Ergebnis innerhalb von <einfachesprache> Tags aus."""
+SYSTEM_MESSAGE_ES = """Du bist ein hilfreicher Assistent, der Texte in Leserfreundlicher Sprache, Sprachniveau B2, umschreibt. Sei immer wahrheitsgemäß und objektiv. Schreibe nur das, was du sicher aus dem Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. Gib dein Ergebnis innerhalb von <einfachesprache> Tags aus."""
 
 
 SYSTEM_MESSAGE_LS = """Du bist ein hilfreicher Assistent, der Texte in Leichte Sprache, Sprachniveau A2, umschreibt. Sei immer wahrheitsgemäß und objektiv. Schreibe nur das, was du sicher aus dem Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. Gib dein Ergebnis innerhalb von <leichtesprache> Tags aus."""
 
 
-RULES_ES = """- Schreibe kurze Sätze mit höchstens 12 Wörtern.
+RULES_ES = """- Schreibe kurze Sätze mit höchstens 20 Wörtern.
 - Beschränke dich auf eine Aussage, einen Gedanken pro Satz.
 - Verwende aktive Sprache anstelle von Passiv. 
 - Formuliere grundsätzlich positiv und bejahend.
@@ -27,14 +27,11 @@ RULES_ES = """- Schreibe kurze Sätze mit höchstens 12 Wörtern.
 - Vermeide Füllwörter und unnötige Wiederholungen.
 - Erkläre Fachbegriffe und Fremdwörter.
 - Schreibe immer einfach, direkt und klar. Vermeide komplizierte Konstruktionen und veraltete Begriffe. Vermeide «Behördendeutsch». 
-- Benenne Gleiches immer gleich. Verwende für denselben Begriff, Gegenstand oder Sachverhalt immer dieselbe Bezeichnung. Wiederholungen von Begriffen sind in Texten in Einfacher Sprache normal.
 - Vermeide Substantivierungen. Verwende stattdessen Verben und Adjektive.
 - Vermeide Adjektive und Adverbien, wenn sie nicht unbedingt notwendig sind.
-- Wenn du vier oder mehr Wörter zusammensetzt, setzt du Bindestriche. Beispiel: «Motorfahrzeug-Ausweispflicht».
 - Achte auf die sprachliche Gleichbehandlung von Mann und Frau. Verwende immer beide Geschlechter oder schreibe geschlechtsneutral.
 - Vermeide Abkürzungen grundsätzlich. Schreibe stattdessen die Wörter aus. Z.B. «10 Millionen» statt «10 Mio.», «200 Kilometer pro Stunde» statt «200 km/h», «zum Beispiel» statt «z.B.», «30 Prozent» statt «30 %», «2 Meter» statt «2 m», «das heisst» statt «d.h.». 
 - Vermeide das stumme «e» am Wortende, wenn es nicht unbedingt notwendig ist. Zum Beispiel: «des Fahrzeugs» statt «des Fahrzeuges».
-- Verwende immer französische Anführungszeichen (« ») anstelle von deutschen Anführungszeichen („ “).
 - Gliedere Telefonnummern mit vier Leerzeichen. Z.B. 044 123 45 67. Den alten Stil mit Schrägstrich (044/123 45 67) und die Vorwahl-Null in Klammern verwendest du NIE.
 - Formatiere Datumsangaben immer so: 1. Januar 2022, 15. Februar 2022.
 - Jahreszahlen schreibst du immer vierstellig aus: 2022, 2025-2030.
@@ -179,9 +176,9 @@ Die Regeln für Leichte Sprache, Sprachniveau A2, sind diese hier:
 Schreibe jetzt deine Analyse und gib diese innerhalb von <leichtesprache> Tags aus."""
 
 
-OPENAI_TEMPLATE_ES = """Bitte schreibe den folgenden schwer verständlichen Text vollständig in Einfache Sprache, Sprachniveau B1 bis A2, um. 
+OPENAI_TEMPLATE_ES = """Bitte schreibe den folgenden schwer verständlichen Text vollständig in Leserfreundlicher Sprache, Sprachniveau B2 um. 
 
-Beachte dabei folgende Regeln für Einfache Sprache (B1 bis A2):
+Beachte dabei folgende Regeln für Leserfreundliche Sprache (B2):
 
 {completeness}
 {rules}
@@ -213,15 +210,15 @@ Hier ist der schwer verständliche Text:
 
 OPENAI_TEMPLATE_ANALYSIS_ES = """Du bekommst einen schwer verständlichen Text, den du genau analysieren sollst. 
 
-Analysiere den schwer verständlichen Text Satz für Satz. Beschreibe genau und detailliert, was sprachlich nicht gut bei jedem Satz ist. Analysiere was ich tun müsste, damit der Text zu Einfacher Sprache (B1 bis A2) wird. Gib klare Hinweise, wie ich den Text besser verständlich machen kann. Gehe bei deiner Analyse Schritt für Schritt vor. 
+Analysiere den schwer verständlichen Text Satz für Satz. Beschreibe genau und detailliert, was sprachlich nicht gut bei jedem Satz ist. Analysiere was ich tun müsste, damit der Text zu Leserfreundliche Sprache (B2) wird. Gib klare Hinweise, wie ich den Text besser verständlich machen kann. Gehe bei deiner Analyse Schritt für Schritt vor. 
 
 1. Wiederhole den Satz. 
-2. Analysiere den Satz auf seine Verständlichkeit. Was muss ich tun, damit der Satz verständlicher wird? Wie kann ich den Satz in Einfacher Sprache, Sprachniveau B1 bis A2 besser formulieren?
+2. Analysiere den Satz auf seine Verständlichkeit. Was muss ich tun, damit der Satz verständlicher wird? Wie kann ich den Satz in Leserfreundlicher Sprache, Sprachniveau B2 besser formulieren?
 3. Mache einen Vorschlag für einen vereinfachten Satz. 
 
 Befolge diesen Ablauf von Anfang bis Ende auch wenn der schwer verständliche Text sehr lang ist. 
 
-Die Regeln für Einfache Sprache, Sprachniveau B1 bis A2, sind diese hier: 
+Die Regeln für Leserfreundliche Sprache, Sprachniveau B2, sind diese hier: 
 
 {rules}
 
