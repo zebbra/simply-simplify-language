@@ -1,5 +1,15 @@
 # Simply simplify language
 **Use LLMs to simplify your institutional communication. Get rid of «Behördendeutsch».**
+## About this fork
+
+This repository is zebbra's fork of [simply-simplify-language](https://github.com/machinelearningZH/simply-simplify-language) by the Canton of Zurich (machinelearningZH). We extended it for a proof of concept for the Canton of Bern:
+
+- container-based deployment (Docker, Poetry, environment configuration)
+- prompts and language rules editable by the responsible team in the UI
+- an expert mode for condensing and completing texts
+
+Status: proof of concept (2024–2025). The upstream project is actively maintained; see the original repository for the current version.
+
 
 [![PyPI - Python](https://img.shields.io/badge/python-v3.9+-blue.svg)](https://github.com/machinelearningZH/simply-simplify-language) 
 [![GitHub Stars](https://img.shields.io/github/stars/machinelearningZH/simply-simplify-language.svg)](https://github.com/machinelearningZH/simply-simplify-language/stargazers) 
